@@ -172,7 +172,7 @@ def save(event):
 	refreshField()
 	f.mark_set(INSERT,cursor)
 	# Reset window title
-	top.wm_title("PyDone -- "+filename)
+	top.wm_title(filename+" -- PyDone")
 f.bind("<Control-s>", save)
 
 
@@ -202,7 +202,7 @@ def toggle(event):
 		f.tag_add("todo","insert linestart","insert lineend")
 		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
 	toggleHidden()
-	top.wm_title("PyDone * -- "+filename)
+	top.wm_title(filename+" * -- PyDone")
 f.bind("<Control-space>", toggle)
 
 
@@ -216,7 +216,7 @@ def add(event):
 	f.insert(INSERT,'\t'*tabs+'[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
 	toggleHidden()
-	top.wm_title("PyDone * -- "+filename)
+	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-a>",add)
 def addChild(event):
 	# Count tabs
@@ -227,7 +227,7 @@ def addChild(event):
 	f.insert(INSERT,'\t'*tabs+'\t[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
 	toggleHidden()
-	top.wm_title("PyDone * -- "+filename)
+	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-c>",addChild)
 
 
@@ -235,21 +235,21 @@ f.bind("<Alt-c>",addChild)
 def addTab(event):
 	f.insert("insert linestart",'\t')
 	toggleHidden()
-	top.wm_title("PyDone * -- "+filename)
+	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-t>",addTab)
 def removeTab(event):
 	tab = f.get("insert linestart","insert lineend").find('\t')
 	if tab>=0:
 		f.delete(f.index(INSERT).split('.')[0]+'.'+str(tab))
 	toggleHidden()
-	top.wm_title("PyDone * -- "+filename)
+	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-T>",removeTab)
 
 
 # Change window title if an alphanumeric character or a space is typed
 def modified(event):
 	if event.char.isalnum() or event.char.isspace():
-		top.wm_title("PyDone * -- "+filename)
+		top.wm_title(filename+" * -- PyDone")
 f.bind("<KeyPress>",modified)
 # Refresh the screen if a modification is undone or redone
 #def ifUndo(event):
@@ -262,6 +262,6 @@ f.bind("<KeyPress>",modified)
 
 # Start UI
 refreshField() # Initialize the field
-top.wm_title("PyDone -- "+filename) # Reinitialize the window title
+top.wm_title(filename+" -- PyDone") # Reinitialize the window title
 f.configure(undo=TRUE) # Allows undo/redo now
 top.mainloop()
