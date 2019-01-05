@@ -41,10 +41,10 @@ to open an arbitrary file. If the file doesn't exist it will be created, and if 
 ![Screenshot.](https://gitlab.com/eyuku/pydone/raw/master/screenshot.png)
 ### Use the list
 #### Basic tasks
-* Lines containing `[]`,`[ ]` or `[x]` are list items. The box doesn't need to be at the beginning of the line, but only what follows it will change color. Pressing `<ctrl+space>` will mark the task on the current line as done/undone. Done tasks are greyed out.
+* Lines containing `[]`,`[ ]` or `[x]` are list items. The box doesn't need to be at the beginning of the line, but only what follows it will change color. Pressing `Ctrl`+`Space` will mark the task on the current line as done/undone. Done tasks are greyed out.
 * Other lines (except the ones starting with `--`) are considered as category titles.
-* Indentation with `<tab>`(again not necesserily at the beginning of the line) is used to describe subtasks. The parent task is greyed out as long as all its direct subtasks are not marked as done, so that the current tasks stand out.
-* A new task with can be inserted under the current line with `<alt+a>`.  Its box will be at the same level as the current line.
+* Identation with tabs (again not necesserily at the beginning of the line) is used to describe subtasks. The parent task is greyed out as long as all its direct subtasks are not marked as done, so that the current tasks stand out.
+* A new task with can be inserted under the current line with `Alt'+'a`.  Its box will be at the same level as the current line. Similarly, a child task can be inserted with `Alt'+'c`.
 #### Deadlines, tags and urgency
 * `//` can be used to add a deadline. Everything following `//` will be highlighted until the end of the line or until the next `--`.
 * `--` can be used to add a tag. Everything following `--` will be highlighted until the end of the line or until the next `//`.
@@ -52,7 +52,16 @@ to open an arbitrary file. If the file doesn't exist it will be created, and if 
 * For each `!` anywhere on the line, the task or title gains one level of urgency and its color changes to be more and more visible. Three levels are defined.
 * Tasks marked as done are completely greyed out, including deadines and tags. Taks hidden because their subtasks are not done still display deadline and tag highlighting.
 #### Saving!
-Pressing `<ctrl+s>` will overwrite the open file or write in ‘pydone_default' if no filename was given. It also refreshes the display so that colors are updated. An unsavec file is indicated by a star in the window title.
+Pressing `Ctrl`+`s` will overwrite the open file or write in ‘pydone_default' if no filename was given. It also refreshes the display so that colors are updated. An unsavec file is indicated by a star in the window title.
+
+### Summary of keyboard shortcuts
+* `Ctrl`+`s`: saves and apply formatting rules.
+* `Ctrl`+`Space`: toggles done/to do on the current line.
+* `Alt`+`a`: insert new task under the current line, at the same level.
+* `Alt`+`c`: insert new task under the current line, with one more level of identation.
+* `Alt`+`t`: Add one level of identation to the current line.
+* `Alt`+`T`: Remove one level of identation to the current line.
+
 
 ## [Unlicense](https://gitlab.com/eyuku/pydone/blob/e09a48f2cf2ddcb971668dcae406531dc210341b/LICENSE)
 
