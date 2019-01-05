@@ -48,9 +48,12 @@ f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="whi
 # Function returning list of tags on a line
 def tagsOnLine(j):
 	line = f.get(str(j)+".0",str(j)+'.'+str(colMax))
-	tags = () # empty list
+	tags = [] # empty list
 	for c in range(0,len(line)):
-		tags=tags+f.tag_names(str(j)+'.'+str(c))
+		tag = f.tag_names(str(j)+'.'+str(c))
+		for t in tag:
+			if t not in tags:
+				tags.append(t)
 	return tags
 
 # Function hiding tasks
@@ -67,9 +70,12 @@ def toggleHidden():
 		visible = TRUE
 		j = 1
 		while i+j<=nbLines-1:
-			if tabs[i+j]==tabs[i]+1:
-				if 'todo' in tagsOnLine(i+j):
-					visible = FALSE
+			# Break if line i+j is not a child or if one todo was found
+			if tabs[i+j]<=tabs[i]:
+				break
+			elif tabs[i+j]==tabs[i]+1 and 'todo' in tagsOnLine(i+j):
+				visible = FALSE
+				break
 			j += 1
 		# Toggle visibility
 		if visible:
@@ -180,22 +186,23 @@ def toggle(event):
 	if line[startBox+1]==']':
 		f.delete(INSERT,"insert+2c")
 		f.insert(INSERT,"[x]")
-		f.tag_remove("todo",INSERT,"insert lineend")
-		f.tag_add("done",INSERT,"insert lineend")
+		f.tag_remove("todo","insert linestart","insert lineend")
+		f.tag_add("done","insert linestart","insert lineend")
 		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1]+1)
 	elif line[startBox+1:startBox+3]==' ]':
 		f.delete(INSERT,"insert+3c")
 		f.insert(INSERT,"[x]")
-		f.tag_remove("todo",INSERT,"insert lineend")
-		f.tag_add("done",INSERT,"insert lineend")
+		f.tag_remove("todo","insert linestart","insert lineend")
+		f.tag_add("done","insert linestart","insert lineend")
 		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
 	elif line[startBox+1:startBox+3]=='x]':
 		f.delete(INSERT,"insert+3c")
 		f.insert(INSERT,"[ ]")
-		f.tag_remove("done",INSERT,"insert lineend")
-		f.tag_add("todo",INSERT,"insert lineend")
+		f.tag_remove("done","insert linestart","insert lineend")
+		f.tag_add("todo","insert linestart","insert lineend")
 		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
 	toggleHidden()
+	top.wm_title("PyDone * -- "+filename)
 f.bind("<Control-space>", toggle)
 
 
@@ -209,6 +216,7 @@ def add(event):
 	f.insert(INSERT,'\t'*tabs+'[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
 	toggleHidden()
+	top.wm_title("PyDone * -- "+filename)
 f.bind("<Alt-a>",add)
 def addChild(event):
 	# Count tabs
@@ -219,6 +227,7 @@ def addChild(event):
 	f.insert(INSERT,'\t'*tabs+'\t[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
 	toggleHidden()
+	top.wm_title("PyDone * -- "+filename)
 f.bind("<Alt-c>",addChild)
 
 
@@ -226,12 +235,14 @@ f.bind("<Alt-c>",addChild)
 def addTab(event):
 	f.insert("insert linestart",'\t')
 	toggleHidden()
+	top.wm_title("PyDone * -- "+filename)
 f.bind("<Alt-t>",addTab)
 def removeTab(event):
 	tab = f.get("insert linestart","insert lineend").find('\t')
 	if tab>=0:
 		f.delete(f.index(INSERT).split('.')[0]+'.'+str(tab))
 	toggleHidden()
+	top.wm_title("PyDone * -- "+filename)
 f.bind("<Alt-T>",removeTab)
 
 
@@ -239,7 +250,6 @@ f.bind("<Alt-T>",removeTab)
 def modified(event):
 	if event.char.isalnum() or event.char.isspace():
 		top.wm_title("PyDone * -- "+filename)
-		f.edit_modified(FALSE)
 f.bind("<KeyPress>",modified)
 # Refresh the screen if a modification is undone or redone
 #def ifUndo(event):
