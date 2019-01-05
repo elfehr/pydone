@@ -52,7 +52,7 @@ to open an arbitrary file. If the file doesn't exist it will be created, and if 
 * For each `!` anywhere on the line, the task or title gains one level of urgency and its color changes to be more and more visible. Three levels are defined.
 * Tasks marked as done are completely greyed out, including deadines and tags. Taks hidden because their subtasks are not done still display deadline and tag highlighting.
 #### Saving!
-Pressing `<ctrl+s>` will overwrite the open file or write in ‘pydone_default' if no filename was given. It also refreshes the display so that colors are updated.
+Pressing `<ctrl+s>` will overwrite the open file or write in ‘pydone_default' if no filename was given. It also refreshes the display so that colors are updated. An unsavec file is indicated by a star in the window title.
 
 ## [Unlicense](https://gitlab.com/eyuku/pydone/blob/e09a48f2cf2ddcb971668dcae406531dc210341b/LICENSE)
 
