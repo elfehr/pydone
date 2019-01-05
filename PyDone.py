@@ -22,11 +22,11 @@ top = Tk()
 s = Scrollbar(top)
 s.pack(side=RIGHT,fill=Y)
 # Text field
-f = Text(top,bg='white',fg='black',wrap=WORD,font=("Latin Modern Mono",12),selectbackground="SlateGray2",yscrollcommand=s.set)
+f = Text(top,bg='white',fg='black',wrap=WORD,undo=FALSE,font=("Latin Modern Mono",12),selectbackground="SlateGray2",yscrollcommand=s.set)
 f.pack(expand=TRUE,fill=BOTH)
 s.config(command=f.yview)
 # Status bar
-s = Label(top,text="save&refresh: <ctrl-s>; toggle status: <ctrl-space>; add under: <ctrl-a>",bg='gray20',fg='white',bd=0) # status bar
+s = Label(top,text="save&refresh: <ctrl-s>; toggle status: <ctrl-space>; add under: <ctrl-a>; add child <ctrl-c>",bg='gray20',fg='white',bd=0) # status bar
 s.pack(side=BOTTOM,fill=X)
 
 
@@ -185,7 +185,7 @@ def toggle(event):
 f.bind("<Control-space>", toggle)
 
 
-# Add new task
+# Add new tasks
 def add(event):
 	# Count tabs
 	line=f.get("insert linestart","insert lineend")
@@ -194,8 +194,26 @@ def add(event):
 	f.mark_set(INSERT,"insert+1l linestart")
 	f.insert(INSERT,'\t'*tabs+'[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
-f.bind("<Alt-a>", add)
+f.bind("<Alt-a>",add)
+def addChild(event):
+	# Count tabs
+	line=f.get("insert linestart","insert lineend")
+	tabs = line.count('\t')
+	# Move and insert tabs and box
+	f.mark_set(INSERT,"insert+1l linestart")
+	f.insert(INSERT,'\t'*tabs+'\t[ ] \n',"todo")
+	f.mark_set(INSERT,"insert-1c")
+f.bind("<Alt-c>",addChild)
 
+# Change identation
+def addTab(event):
+	f.insert("insert linestart",'\t')
+f.bind("<Alt-t>",addTab)
+def removeTab(event):
+	f.delete("insert linestart")
+f.bind("<Alt-T>",removeTab)
+
+#return "break"
 
 # Change window title if an alphanumeric character or a space is typed
 def modified(event):
@@ -206,6 +224,7 @@ f.bind("<KeyPress>",modified)
 
 
 # Start UI
-refreshField()
-top.wm_title("PyDone -- "+filename)
+refreshField() # Initialize the field
+top.wm_title("PyDone -- "+filename) # Reinitialize the window title
+f.configure(undo=TRUE) # Allows undo/redo now
 top.mainloop()
