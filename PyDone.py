@@ -26,8 +26,10 @@ f = Text(top,bg='white',fg='black',wrap=WORD,undo=FALSE,font=("Latin Modern Mono
 f.pack(expand=TRUE,fill=BOTH)
 s.config(command=f.yview)
 # Status bar
-s = Label(top,text="save&refresh: <ctrl-s>; toggle status: <ctrl-space>; add under: <ctrl-a>; add child <ctrl-c>",bg='gray20',fg='white',bd=0) # status bar
+s = Label(top,text="save&refresh: Ctrl+s; toggle status: Ctrl+space; add under/child: Alt+a/c; tab+/-: Alt+t/T",bg='gray20',fg='white',bd=0) # status bar
 s.pack(side=BOTTOM,fill=X)
+# Column index chosen to mean end of line
+colMax = 999
 
 
 # Formatting, by lowest priority
@@ -43,17 +45,50 @@ f.tag_config("date",background="MediumPurple4",foreground="white",selectbackgrou
 f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="white",selectbackground="SlateGray2")
 
 
-# Inserts file and formatting line by line
+# Function returning list of tags on a line
+def tagsOnLine(j):
+	line = f.get(str(j)+".0",str(j)+'.'+str(colMax))
+	tags = () # empty list
+	for c in range(0,len(line)):
+		tags=tags+f.tag_names(str(j)+'.'+str(c))
+	return tags
+
+# Function hiding tasks
+def toggleHidden():
+	nbLines = int(f.index(END).split('.')[0])
+	# First passage to count tabs
+	tabs = [-1]
+	for i in range(1,nbLines):
+		line = f.get(str(i)+".0",str(i)+'.'+str(colMax))
+		tabs.append(line.count('\t'))
+	
+	# Recond passage to act
+	for i in range(1,nbLines): # line to be hidden
+		visible = TRUE
+		j = 1
+		while i+j<=nbLines-1:
+			if tabs[i+j]==tabs[i]+1:
+				if 'todo' in tagsOnLine(i+j):
+					visible = FALSE
+			j += 1
+		# Toggle visibility
+		if visible:
+			f.tag_remove("hidden",str(i)+'.0',str(i)+'.'+str(colMax))
+		else:
+			f.tag_add("hidden",str(i)+'.0',str(i)+'.'+str(colMax))
+	return
+
+# Function Inserting file and formatting line by line
 def refreshField():
 	l  = open(filename,'r')
 	tagCol = [] # empty custom tags
 	tagDef = []
-	tabs = [-1] # empty indentation list
+	
 	for line in l:
 		# Add line
 		startLine = f.index("insert")
 		startLine = startLine[:-1]+'0'
-		endLine = startLine[:-1]+'999'
+		endLine = startLine[:-1]+str(colMax)
 		f.insert(INSERT,line)
 		
 		# Read the tag definitions, right to left
@@ -64,10 +99,7 @@ def refreshField():
 					tagCol.append(line[line.rfind('=')+1:].strip())
 					tagDef.append(line[line.rfind('--')+2:line.rfind('=')].strip())
 				line = line[:line.rfind('--')]
-		
-		# Count indentation
-		tabs.append(line.count('\t'))
-		
+				
 		# Search for checkbox
 		if line.find('[]')>=0 or line.find('[ ]')>=0:
 			f.tag_add("todo",startLine,endLine)
@@ -87,7 +119,7 @@ def refreshField():
 			f.tag_add("deadly",startTask,endLine)
 		
 		# Finds tags and dates, starting by the end
-		endTag = 999
+		endTag = colMax
 		while line.count('--')+line.count('//')>0:
 			startTag = max(line.rfind('--'),line.rfind('//'))
 			if line.rfind('--')>line.rfind('//'):
@@ -97,7 +129,7 @@ def refreshField():
 			endTag = startTag-1
 			line = line[:endTag].rstrip()
 	l.close()
-	
+	toggleHidden()
 	
 	# Defines the custom tags
 	for i in range(0,len(tagDef)):
@@ -113,25 +145,6 @@ def refreshField():
 		if tag in tagDef:
 			f.tag_add(tag,tagList[i],tagList[i+1])
 			f.tag_remove('tag',tagList[i],tagList[i+1])
-	
-	
-	# Tasks to be hidden
-	for i in range(1,len(tabs)-1): # line to be hidden
-		visible = TRUE
-		j = 1
-		while i+j<=len(tabs)-1:
-			if tabs[i+j]<=tabs[i]:
-				break
-			if tabs[i+j]==tabs[i]+1:
-				if 'todo' in f.tag_names(str(i+j)+'.0'):
-					visible = FALSE
-					break
-			j += 1
-		# Toggle visibility
-		if visible:
-			f.tag_remove("hidden",str(i)+'.0',str(i)+'.999')
-		else:
-			f.tag_add("hidden",str(i)+'.0',str(i)+'.999')
 	
 	return
 
@@ -182,6 +195,7 @@ def toggle(event):
 		f.tag_remove("done",INSERT,"insert lineend")
 		f.tag_add("todo",INSERT,"insert lineend")
 		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
+	toggleHidden()
 f.bind("<Control-space>", toggle)
 
 
@@ -194,6 +208,7 @@ def add(event):
 	f.mark_set(INSERT,"insert+1l linestart")
 	f.insert(INSERT,'\t'*tabs+'[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
+	toggleHidden()
 f.bind("<Alt-a>",add)
 def addChild(event):
 	# Count tabs
@@ -203,17 +218,22 @@ def addChild(event):
 	f.mark_set(INSERT,"insert+1l linestart")
 	f.insert(INSERT,'\t'*tabs+'\t[ ] \n',"todo")
 	f.mark_set(INSERT,"insert-1c")
+	toggleHidden()
 f.bind("<Alt-c>",addChild)
+
 
 # Change identation
 def addTab(event):
 	f.insert("insert linestart",'\t')
+	toggleHidden()
 f.bind("<Alt-t>",addTab)
 def removeTab(event):
-	f.delete("insert linestart")
+	tab = f.get("insert linestart","insert lineend").find('\t')
+	if tab>=0:
+		f.delete(f.index(INSERT).split('.')[0]+'.'+str(tab))
+	toggleHidden()
 f.bind("<Alt-T>",removeTab)
 
-#return "break"
 
 # Change window title if an alphanumeric character or a space is typed
 def modified(event):
@@ -221,6 +241,13 @@ def modified(event):
 		top.wm_title("PyDone * -- "+filename)
 		f.edit_modified(FALSE)
 f.bind("<KeyPress>",modified)
+# Refresh the screen if a modification is undone or redone
+#def ifUndo(event):
+#	print('cancelled')
+#	toggleHidden()
+#top.bind("<Control-z>",ifUndo)
+#top.bind("<Control-Z>",ifUndo)
+#top.bind("<Control-y>",ifUndo)
 
 
 # Start UI
