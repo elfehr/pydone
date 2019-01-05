@@ -1,21 +1,19 @@
 #!/usr/bin/python
-# Use:  python3 todoeditor.py file
+# gitlab.com/eyuku/pydone
 
-### EXAMPLE FILE
-#Category
-#[ ] Project
-#	[ ] Subproject
-#	[ ] Subproject --tag //deadline
-#		[x] Subsubproject
-#		[ ] ! Important subsubproject //deadline
-#		[ ] Urgent subsubproject !! --tag
-#			[ ] !!! Very very important subsubsubproject
-#		[x] Subsubproject
-#	[ ] Subproject //deadline --custom tag
-#--custom tag = red
 
 from tkinter import *
 import sys
+
+# Define filename and make sure it exists
+if len(sys.argv)>1:
+	filename = sys.argv[1]
+	open(filename,'a').close()
+else:
+	# Choose the default name and make sure the file is empty
+	filename = "pydone_default"
+	open(filename,'w+').close()
+
 
 # Fields definition
 # Window
@@ -24,7 +22,6 @@ top = Tk()
 s = Scrollbar(top)
 s.pack(side=RIGHT,fill=Y)
 # Text field
-top.wm_title("To do list")
 f = Text(top,bg='white',fg='black',wrap=WORD,font=("Latin Modern Mono",12),selectbackground="SlateGray2",yscrollcommand=s.set)
 f.pack(expand=TRUE,fill=BOTH)
 s.config(command=f.yview)
@@ -48,7 +45,7 @@ f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="whi
 
 # Inserts file and formatting line by line
 def refreshField():
-	l  = open(sys.argv[1],'r')
+	l  = open(filename,'r')
 	tagCol = [] # empty custom tags
 	tagDef = []
 	tabs = [-1] # empty indentation list
@@ -119,20 +116,14 @@ def refreshField():
 	
 	
 	# Tasks to be hidden
-	print(tabs)
 	for i in range(1,len(tabs)-1): # line to be hidden
-		print(i)
 		visible = TRUE
 		j = 1
 		while i+j<=len(tabs)-1:
-			print('\t'*tabs[i+j],i+j)
 			if tabs[i+j]<=tabs[i]:
-				print('\t'*tabs[i+j],'not child')
 				break
 			if tabs[i+j]==tabs[i]+1:
-				print('\t'*tabs[i+j],'correct indentation')
 				if 'todo' in f.tag_names(str(i+j)+'.0'):
-					print('\t'*tabs[i+j],'FALSE')
 					visible = FALSE
 					break
 			j += 1
@@ -149,10 +140,9 @@ def refreshField():
 # Save and refresh formatting
 def save(event):
 	# Save to file
-	l = open(sys.argv[1],'w')
+	l = open(filename,'w')
 	l.write(f.get("1.0",'end-1c'))
 	l.close()
-	print('saved')
 	# Remove all tags
 	tagList = f.tag_names()
 	for tag in tagList:
@@ -162,6 +152,8 @@ def save(event):
 	f.delete('1.0', END)
 	refreshField()
 	f.mark_set(INSERT,cursor)
+	# Reset window title
+	top.wm_title("PyDone -- "+filename)
 f.bind("<Control-s>", save)
 
 
@@ -205,6 +197,15 @@ def add(event):
 f.bind("<Alt-a>", add)
 
 
+# Change window title if an alphanumeric character or a space is typed
+def modified(event):
+	if event.char.isalnum() or event.char.isspace():
+		top.wm_title("PyDone * -- "+filename)
+		f.edit_modified(FALSE)
+f.bind("<KeyPress>",modified)
+
+
 # Start UI
 refreshField()
+top.wm_title("PyDone -- "+filename)
 top.mainloop()
