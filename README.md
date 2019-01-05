@@ -31,11 +31,11 @@ or by [downloading the archive](https://gitlab.com/eyuku/pydone/-/archive/master
 ### Start the script
 In the folder where you downloaded the files, run
 ```console
-$ python PyDone.py example
+$ python PyDone.py example &
 ```
 to open the example list, or
 ```console
-$ python PyDone.py <file>
+$ python PyDone.py <file> &
 ```
 to open an arbitrary file. If the file doesn't exist it will be created, and if no filename is given, an empty list opens and will be saved under the name 'pydone_default'. The file is a simple text file with the exact content displayed in the interface (minus the formatting).
 ![Screenshot.](https://gitlab.com/eyuku/pydone/raw/master/screenshot.png)
