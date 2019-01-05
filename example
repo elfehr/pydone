@@ -1,0 +1,24 @@
+Category!
+[ ] Project 1
+[ ] Project 2 --planning
+	[ ] SubProject
+	[ ] SubProject --tag1 //tomorrow --tag2
+		[x] SubSubProject //deadline --tag
+		[ ] ! Important subSubProject //deadline
+			[ ] Ultra ! Important ! Thing !
+		[ ] Very important subSubProject !! --custom tag //march --question
+	[ ] SubProject
+		[ ] SubSubProject
+		
+	SubCategory
+	[ ] SubProject
+		[x] SubSubProject
+	[ ] SubProject //2019/01/01 --random tag
+	
+Category
+[ ] Project 3 --custom tag
+	[ ] SubProject
+		[ ] SubSubProject --tag
+		
+-- custom tag = green --question = red
+--planning=blue
