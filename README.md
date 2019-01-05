@@ -19,7 +19,7 @@ $ apt-get python3-tk
 ```
 On Archlinux/Manjaro:
 ```console
-me@computer:~$ sudo pacman -S tk
+$ sudo pacman -S tk
 ```
 Then download the project with:
 ```console
