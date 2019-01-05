@@ -63,10 +63,9 @@ def refreshField():
 		if line.startswith("--"):
 			while line.count("--")>0:
 				f.tag_add("definition",startLine,endLine)
-				tagCol.append(line[line.rfind('=')+1:].strip())
-				tagDef.append(line[line.rfind('--')+2:line.rfind('=')].strip())
-				#f.tag_config(tagDef,background=tagCol)
-				print('Defined tag',tagDef[-1],'as',tagCol[-1])
+				if line.rfind('=')>line.rfind('--'): # if there is an equal sign only
+					tagCol.append(line[line.rfind('=')+1:].strip())
+					tagDef.append(line[line.rfind('--')+2:line.rfind('=')].strip())
 				line = line[:line.rfind('--')]
 		
 		# Count indentation
@@ -105,7 +104,10 @@ def refreshField():
 	
 	# Defines the custom tags
 	for i in range(0,len(tagDef)):
-		f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground="SlateGray2")
+		try:
+			f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground="SlateGray2")
+		except:
+			continue
 	f.tag_raise('done')
 	# Go back to change them
 	tagList = f.tag_ranges('tag')
