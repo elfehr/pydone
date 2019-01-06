@@ -18,6 +18,8 @@ else:
 # Fields definition
 # Window
 top = Tk()
+ico = PhotoImage(file='PyDone.png')
+top.iconphoto(True, ico)
 # Scrollbar
 s = Scrollbar(top)
 s.pack(side=RIGHT,fill=Y)
@@ -188,7 +190,7 @@ def toggle(event):
 		f.insert(INSERT,"[x]")
 		f.tag_remove("todo","insert linestart","insert lineend")
 		f.tag_add("done","insert linestart","insert lineend")
-		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1]+1)
+		f.mark_set(INSERT,cursor.split('.')[0]+'.'+str(cursor.split('.')[1]+1))
 	elif line[startBox+1:startBox+3]==' ]':
 		f.delete(INSERT,"insert+3c")
 		f.insert(INSERT,"[x]")
