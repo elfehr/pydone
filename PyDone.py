@@ -11,7 +11,7 @@ from optparse import OptionParser
 # Fields definition
 # Window
 top = tkinter.Tk()
-ico = tkinter.PhotoImage(file='PyDone.png')
+ico = tkinter.PhotoImage(file='icon.png')
 top.iconphoto(True, ico)
 # Scrollbar
 s = tkinter.Scrollbar(top)
