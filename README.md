@@ -1,6 +1,6 @@
 # PyDone
 
-![PyDone icon: a snake and a pen, crossing and forming an ampersand.](./PyDone.svg =250x)
+![PyDone icon: a snake and a pen, crossing and forming an ampersand.](./PyDone.png)
 A python 3 script to display and edit text-based to-do lists with a simple user interface.
 
 
