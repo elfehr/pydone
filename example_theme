@@ -1,0 +1,80 @@
+# General settings
+color = black # Font color
+fieldBackground: f.cget('bg') # Background of the whole window
+selectionBackground = red # Selection color
+
+# Status bar
+statusFont = TkTooltipFont
+statusColor: s.cget('fg')
+statusBackground: s.cget('bg')
+
+# Definitions
+fontDefinition = TkTooltipFont
+colorDefinition = gray50
+highlightDefinition: f.cget('background')
+overstrikeDefinition: False
+underlineDefinition: False
+
+# Title
+fontTitle = TkHeadingFont
+colorTitle: f.cget('fg')
+highlightTitle: f.cget('background')
+overstrikeTitle: False
+underlineTitle: False
+
+
+# Todo
+fontTodo = TkFixedFont
+colorTodo: f.cget('fg')
+highlightTodo: f.cget('background')
+overstrikeTodo: False
+underlineTodo: False
+
+# !
+font! = TkFixedFont
+color! = DarkGoldenRod1
+highlight!: f.cget('background')
+overstrike!: False
+underline!: False
+
+# !!
+font!! = TkFixedFont
+color!! = OrangeRed2
+highlight!!: f.cget('background')
+overstrike!!: False
+underline!!: False
+
+# !!!
+font!!! = TkFixedFont
+color!!! = red
+highlight!!!: f.cget('background')
+overstrike!!!: False
+underline!!!: True
+
+# Hidden
+fontHidden = TkSmallCaptionFont
+colorHidden = gray50
+highlightHidden: f.cget('background')
+overstrikeHidden: False
+underlineHidden: False
+
+# Tag
+fontTag = TkTextFont
+colorTag: f.cget('fg')
+highlightTag = forest green
+overstrikeTag: False
+underlineTag: False
+
+# Date
+fontDate = TkTextFont
+colorDate: f.cget('fg')
+highlightDate = DarkOrchid3
+overstrikeDate: False
+underlineDate: False
+
+# Done
+fontDone = TkFixedFont
+colorDone = gray50
+highlightDone: f.cget('background')
+overstrikeDone: True
+underlineDone: False
