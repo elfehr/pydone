@@ -4,15 +4,29 @@
 
 from tkinter import *
 import sys
+from optparse import OptionParser
 
-# Define filename and make sure it exists
-if len(sys.argv)>1:
-	filename = sys.argv[1]
-	open(filename,'a').close()
-else:
-	# Choose the default name and make sure the file is empty
-	filename = "pydone_default"
+
+# Read arguments
+parser = OptionParser()
+parser.add_option("-f", "--file", dest="filename", default="pydone_default",
+                  help="write report to FILE")
+parser.add_option("-t", "--theme", dest="theme", default="none",
+                  help="theme help")
+(options, args) = parser.parse_args()
+filename = options.filename
+theme = options.theme
+if filename=="pydone_default" and len(args)>0:
+	filename = args[0]
+
+# Make sure the file exists and is empty if default
+if filename=="pydone_default":
 	open(filename,'w+').close()
+else:
+	open(filename,'a').close()
+
+# Import color schemes
+#from fibo import *
 
 
 # Fields definition
@@ -24,7 +38,7 @@ top.iconphoto(True, ico)
 s = Scrollbar(top)
 s.pack(side=RIGHT,fill=Y)
 # Text field
-f = Text(top,bg='white',fg='black',wrap=WORD,undo=FALSE,font=("Latin Modern Mono",12),selectbackground="SlateGray2",yscrollcommand=s.set)
+f = Text(top,wrap=WORD,undo=FALSE,selectbackground="SlateGray3",yscrollcommand=s.set)
 f.pack(expand=TRUE,fill=BOTH)
 s.config(command=f.yview)
 # Status bar
@@ -37,14 +51,14 @@ colMax = 999
 # Formatting, by lowest priority
 f.tag_config("definition",font=("Latin Modern Mono",10),foreground="gray80")
 f.tag_config("title",underline=0,font=("Latin Modern Mono Caps",15))
-f.tag_config("todo",foreground="black",overstrike=0,underline=0,background="white",selectbackground="SlateGray2")
+f.tag_config("todo",foreground="black",overstrike=0,underline=0,background="white",selectbackground="SlateGray3")
 f.tag_config("important",foreground="orange")
 f.tag_config("urgent",foreground="orange red")
 f.tag_config("deadly",foreground="red2",underline=1)
 f.tag_config("hidden",foreground="gray80")
-f.tag_config("tag",background="orange",foreground="black",selectbackground="SlateGray2")
-f.tag_config("date",background="MediumPurple4",foreground="white",selectbackground="SlateGray2")
-f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="white",selectbackground="SlateGray2")
+f.tag_config("tag",background="orange",foreground="black",selectbackground="SlateGray3")
+f.tag_config("date",background="MediumPurple4",foreground="white",selectbackground="SlateGray3")
+f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="white",selectbackground="SlateGray3")
 
 
 # Function returning list of tags on a line
@@ -142,7 +156,7 @@ def refreshField():
 	# Defines the custom tags
 	for i in range(0,len(tagDef)):
 		try:
-			f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground="SlateGray2")
+			f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground="SlateGray3")
 		except:
 			continue
 	f.tag_raise('done')
