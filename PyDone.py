@@ -2,20 +2,40 @@
 # gitlab.com/eyuku/pydone
 
 
-from tkinter import *
+import tkinter
 import sys
 from optparse import OptionParser
+#from tkinter import font
+
+
+# Fields definition
+# Window
+top = tkinter.Tk()
+ico = tkinter.PhotoImage(file='PyDone.png')
+top.iconphoto(True, ico)
+# Scrollbar
+s = tkinter.Scrollbar(top)
+s.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+# Text field
+f = tkinter.Text(top,wrap=tkinter.WORD,undo=tkinter.FALSE,yscrollcommand=s.set)
+f.pack(expand=tkinter.TRUE,fill=tkinter.BOTH)
+s.config(command=f.yview)
+# Status bar
+s = tkinter.Label(top,text="save&refresh: Ctrl+s; toggle status: Ctrl+space; add under/child: Alt+a/c; tab+/-: Alt+t/T") # status bar
+s.pack(side=tkinter.BOTTOM,fill=tkinter.X)
+# Column index chosen to mean end of line
+colMax = 999
 
 
 # Read arguments
 parser = OptionParser()
 parser.add_option("-f", "--file", dest="filename", default="pydone_default",
                   help="write report to FILE")
-parser.add_option("-t", "--theme", dest="theme", default="none",
+parser.add_option("-t", "--theme", dest="themename", default="",
                   help="theme help")
 (options, args) = parser.parse_args()
 filename = options.filename
-theme = options.theme
+themename = options.themename
 if filename=="pydone_default" and len(args)>0:
 	filename = args[0]
 
@@ -25,40 +45,168 @@ if filename=="pydone_default":
 else:
 	open(filename,'a').close()
 
-# Import color schemes
-#from fibo import *
 
+# Import color schemes and complete what is not user-defined
+theme = {}
+if themename != '':
+	with open(themename,'r') as t:
+		for line in t:
+			line = line.split('#')[0]
+			line = line.split('=',1)
+			if len(line)==2:
+				key = line[0].strip()
+				value = line[1].strip()
+				theme[key] = value
 
-# Fields definition
-# Window
-top = Tk()
-ico = PhotoImage(file='PyDone.png')
-top.iconphoto(True, ico)
-# Scrollbar
-s = Scrollbar(top)
-s.pack(side=RIGHT,fill=Y)
-# Text field
-f = Text(top,wrap=WORD,undo=FALSE,selectbackground="SlateGray3",yscrollcommand=s.set)
-f.pack(expand=TRUE,fill=BOTH)
-s.config(command=f.yview)
+# General
+if not 'color' in theme:
+	theme['color'] = f.cget('fg')
+if not 'selectionBackground' in theme:
+	theme['selectionBackground'] = f.cget('selectbackground')
+if not 'fieldBackground' in theme:
+	theme['fieldBackground'] = f.cget('bg')
+f.configure(fg=theme['color'],background=theme['fieldBackground'],selectbackground=theme['selectionBackground'])
+
 # Status bar
-s = Label(top,text="save&refresh: Ctrl+s; toggle status: Ctrl+space; add under/child: Alt+a/c; tab+/-: Alt+t/T",bg='gray20',fg='white',bd=0) # status bar
-s.pack(side=BOTTOM,fill=X)
-# Column index chosen to mean end of line
-colMax = 999
+if not 'statusFont' in theme:
+	theme['statusFont'] = "TkTooltipFont"
+if not 'statusColor' in theme:
+	theme['statusColor'] = s.cget('fg')
+if not 'statusBackground' in theme:
+	theme['statusBackground'] = s.cget('bg')
+s.configure(font=theme['statusFont'],fg=theme['statusColor'],background=theme['statusBackground'])
+
+# Definitions
+if not 'fontDefinition' in theme:
+	theme['fontDefinition'] = "TkTooltipFont"
+if not 'colorDefinition' in theme:
+	theme['colorDefinition'] = "gray50"
+if not 'highlightDefinition' in theme:
+	theme['highlightDefinition'] = f.cget('background')
+if not 'overstrikeDefinition' in theme:
+	theme['overstrikeDefinition'] = False
+if not 'underlineDefinition' in theme:
+	theme['underlineDefinition'] = False
+f.tag_config("definition",font=theme['fontDefinition'],foreground=theme['colorDefinition'],background=theme['highlightDefinition'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeDefinition'],underline=theme['underlineDefinition'])
+
+# Title
+if not 'fontTitle' in theme:
+	theme['fontTitle'] = "TkHeadingFont"
+if not 'colorTitle' in theme:
+	theme['colorTitle'] = f.cget('fg')
+if not 'highlightTitle' in theme:
+	theme['highlightTitle'] = f.cget('background')
+if not 'overstrikeTitle' in theme:
+	theme['overstrikeTitle'] = False
+if not 'underlineTitle' in theme:
+	theme['underlineTitle'] = False
+f.tag_config("title",font=theme['fontTitle'],foreground=theme['colorTitle'],background=theme['highlightTitle'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeTitle'],underline=theme['underlineTitle'])
 
 
-# Formatting, by lowest priority
-f.tag_config("definition",font=("Latin Modern Mono",10),foreground="gray80")
-f.tag_config("title",underline=0,font=("Latin Modern Mono Caps",15))
-f.tag_config("todo",foreground="black",overstrike=0,underline=0,background="white",selectbackground="SlateGray3")
-f.tag_config("important",foreground="orange")
-f.tag_config("urgent",foreground="orange red")
-f.tag_config("deadly",foreground="red2",underline=1)
-f.tag_config("hidden",foreground="gray80")
-f.tag_config("tag",background="orange",foreground="black",selectbackground="SlateGray3")
-f.tag_config("date",background="MediumPurple4",foreground="white",selectbackground="SlateGray3")
-f.tag_config("done",foreground="gray80",overstrike=0,underline=0,background="white",selectbackground="SlateGray3")
+# Todo
+if not 'fontTodo' in theme:
+	theme['fontTodo'] = "TkFixedFont"
+if not 'colorTodo' in theme:
+	theme['colorTodo'] = f.cget('fg')
+if not 'highlightTodo' in theme:
+	theme['highlightTodo'] = f.cget('background')
+if not 'overstrikeTodo' in theme:
+	theme['overstrikeTodo'] = False
+if not 'underlineTodo' in theme:
+	theme['underlineTodo'] = False
+f.tag_config("todo",font=theme['fontTodo'],foreground=theme['colorTodo'],background=theme['highlightTodo'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeTodo'],underline=theme['underlineTodo'])
+
+# !
+if not 'font!' in theme:
+	theme['font!'] = "TkFixedFont"
+if not 'color!' in theme:
+	theme['color!'] = "DarkGoldenRod1"
+if not 'highlight!' in theme:
+	theme['highlight!'] = f.cget('background')
+if not 'overstrike!' in theme:
+	theme['overstrike!'] = False
+if not 'underline!' in theme:
+	theme['underline!'] = False
+f.tag_config("important",font=theme['font!'],foreground=theme['color!'],background=theme['highlight!'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrike!'],underline=theme['underline!'])
+
+# !!
+if not 'font!!' in theme:
+	theme['font!!'] = "TkFixedFont"
+if not 'color!!' in theme:
+	theme['color!!'] = "OrangeRed2"
+if not 'highlight!!' in theme:
+	theme['highlight!!'] = f.cget('background')
+if not 'overstrike!!' in theme:
+	theme['overstrike!!'] = False
+if not 'underline!!' in theme:
+	theme['underline!!'] = False
+f.tag_config("urgent",font=theme['font!!'],foreground=theme['color!!'],background=theme['highlight!!'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrike!!'],underline=theme['underline!!'])
+
+# !!!
+if not 'font!!!' in theme:
+	theme['font!!!'] = "TkFixedFont"
+if not 'color!!!' in theme:
+	theme['color!!!'] = "red"
+if not 'highlight!!!' in theme:
+	theme['highlight!!!'] = f.cget('background')
+if not 'overstrike!!!' in theme:
+	theme['overstrike!!!'] = False
+if not 'underline!!!' in theme:
+	theme['underline!!!'] = True
+f.tag_config("deadly",font=theme['font!!!'],foreground=theme['color!!!'],background=theme['highlight!!!'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrike!!!'],underline=theme['underline!!!'])
+
+# Hidden
+if not 'fontHidden' in theme:
+	theme['fontHidden'] = "TkSmallCaptionFont"
+if not 'colorHidden' in theme:
+	theme['colorHidden'] = "gray50"
+if not 'highlightHidden' in theme:
+	theme['highlightHidden'] = f.cget('background')
+if not 'overstrikeHidden' in theme:
+	theme['overstrikeHidden'] = False
+if not 'underlineHidden' in theme:
+	theme['underlineHidden'] = False
+f.tag_config("hidden",font=theme['fontHidden'],foreground=theme['colorHidden'],background=theme['highlightHidden'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeHidden'],underline=theme['underlineHidden'])
+
+# Tag
+if not 'fontTag' in theme:
+	theme['fontTag'] = "TkTextFont"
+if not 'colorTag' in theme:
+	theme['colorTag'] = f.cget('fg')
+if not 'highlightTag' in theme:
+	theme['highlightTag'] = "forest green"
+if not 'overstrikeTag' in theme:
+	theme['overstrikeTag'] = False
+if not 'underlineTag' in theme:
+	theme['underlineTag'] = False
+f.tag_config("tag",font=theme['fontTag'],foreground=theme['colorTag'],background=theme['highlightTag'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeTag'],underline=theme['underlineTag'])
+
+# Date
+if not 'fontDate' in theme:
+	theme['fontDate'] = "TkTextFont"
+if not 'colorDate' in theme:
+	theme['colorDate'] = f.cget('fg')
+if not 'highlightDate' in theme:
+	theme['highlightDate'] = "DarkOrchid3"
+if not 'overstrikeDate' in theme:
+	theme['overstrikeDate'] = False
+if not 'underlineDate' in theme:
+	theme['underlineDate'] = False
+f.tag_config("date",font=theme['fontDate'],foreground=theme['colorDate'],background=theme['highlightDate'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeDate'],underline=theme['underlineDate'])
+
+# Done
+if not 'fontDone' in theme:
+	theme['fontDone'] = "TkFixedFont"
+if not 'colorDone' in theme:
+	theme['colorDone'] = "gray50"
+if not 'highlightDone' in theme:
+	theme['highlightDone'] = f.cget('background')
+if not 'overstrikeDone' in theme:
+	theme['overstrikeDone'] = True
+if not 'underlineDone' in theme:
+	theme['underlineDone'] = False
+f.tag_config("done",font=theme['fontDone'],foreground=theme['colorDone'],background=theme['highlightDone'],selectbackground=theme['selectionBackground'],overstrike=theme['overstrikeDone'],underline=theme['underlineDone'])
+
 
 
 # Function returning list of tags on a line
@@ -74,7 +222,7 @@ def tagsOnLine(j):
 
 # Function hiding tasks
 def toggleHidden():
-	nbLines = int(f.index(END).split('.')[0])
+	nbLines = int(f.index(tkinter.END).split('.')[0])
 	# First passage to count tabs
 	tabs = [-1]
 	for i in range(1,nbLines):
@@ -83,14 +231,14 @@ def toggleHidden():
 	
 	# Recond passage to act
 	for i in range(1,nbLines): # line to be hidden
-		visible = TRUE
+		visible = True
 		j = 1
 		while i+j<=nbLines-1:
 			# Break if line i+j is not a child or if one todo was found
 			if tabs[i+j]<=tabs[i]:
 				break
 			elif tabs[i+j]==tabs[i]+1 and 'todo' in tagsOnLine(i+j):
-				visible = FALSE
+				visible = False
 				break
 			j += 1
 		# Toggle visibility
@@ -111,7 +259,7 @@ def refreshField():
 		startLine = f.index("insert")
 		startLine = startLine[:-1]+'0'
 		endLine = startLine[:-1]+str(colMax)
-		f.insert(INSERT,line)
+		f.insert(tkinter.INSERT,line)
 		
 		# Read the tag definitions, right to left
 		if line.startswith("--"):
@@ -156,7 +304,7 @@ def refreshField():
 	# Defines the custom tags
 	for i in range(0,len(tagDef)):
 		try:
-			f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground="SlateGray3")
+			f.tag_config(tagDef[i],background=tagCol[i],foreground="black",selectbackground=theme['selectionBackground'])
 		except:
 			continue
 	f.tag_raise('done')
@@ -183,10 +331,10 @@ def save(event):
 	for tag in tagList:
 		f.tag_remove(tag,1.0)
 	# Empty and refresh, saving cursor position
-	cursor = f.index(INSERT)
-	f.delete('1.0', END)
+	cursor = f.index(tkinter.INSERT)
+	f.delete('1.0', tkinter.END)
 	refreshField()
-	f.mark_set(INSERT,cursor)
+	f.mark_set(tkinter.INSERT,cursor)
 	# Reset window title
 	top.wm_title(filename+" -- PyDone")
 f.bind("<Control-s>", save)
@@ -194,29 +342,29 @@ f.bind("<Control-s>", save)
 
 # Toggle todo/done status
 def toggle(event):
-	cursor = f.index(INSERT)
+	cursor = f.index(tkinter.INSERT)
 	line=f.get("insert linestart","insert lineend")
 	startBox = line.find('[')
-	f.mark_set(INSERT,cursor.split('.')[0]+'.'+str(startBox))
-	f.tag_remove("hidden",INSERT,"insert lineend")
+	f.mark_set(tkinter.INSERT,cursor.split('.')[0]+'.'+str(startBox))
+	f.tag_remove("hidden",tkinter.INSERT,"insert lineend")
 	if line[startBox+1]==']':
-		f.delete(INSERT,"insert+2c")
-		f.insert(INSERT,"[x]")
+		f.delete(tkinter.INSERT,"insert+2c")
+		f.insert(tkinter.INSERT,"[x]")
 		f.tag_remove("todo","insert linestart","insert lineend")
 		f.tag_add("done","insert linestart","insert lineend")
-		f.mark_set(INSERT,cursor.split('.')[0]+'.'+str(cursor.split('.')[1]+1))
+		f.mark_set(tkinter.INSERT,cursor.split('.')[0]+'.'+str(cursor.split('.')[1]+1))
 	elif line[startBox+1:startBox+3]==' ]':
-		f.delete(INSERT,"insert+3c")
-		f.insert(INSERT,"[x]")
+		f.delete(tkinter.INSERT,"insert+3c")
+		f.insert(tkinter.INSERT,"[x]")
 		f.tag_remove("todo","insert linestart","insert lineend")
 		f.tag_add("done","insert linestart","insert lineend")
-		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
+		f.mark_set(tkinter.INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
 	elif line[startBox+1:startBox+3]=='x]':
-		f.delete(INSERT,"insert+3c")
-		f.insert(INSERT,"[ ]")
+		f.delete(tkinter.INSERT,"insert+3c")
+		f.insert(tkinter.INSERT,"[ ]")
 		f.tag_remove("done","insert linestart","insert lineend")
 		f.tag_add("todo","insert linestart","insert lineend")
-		f.mark_set(INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
+		f.mark_set(tkinter.INSERT,cursor.split('.')[0]+'.'+cursor.split('.')[1])
 	toggleHidden()
 	top.wm_title(filename+" * -- PyDone")
 f.bind("<Control-space>", toggle)
@@ -228,9 +376,9 @@ def add(event):
 	line=f.get("insert linestart","insert lineend")
 	tabs = line.count('\t')
 	# Move and insert tabs and box
-	f.mark_set(INSERT,"insert+1l linestart")
-	f.insert(INSERT,'\t'*tabs+'[ ] \n',"todo")
-	f.mark_set(INSERT,"insert-1c")
+	f.mark_set(tkinter.INSERT,"insert+1l linestart")
+	f.insert(tkinter.INSERT,'\t'*tabs+'[ ] \n',"todo")
+	f.mark_set(tkinter.INSERT,"insert-1c")
 	toggleHidden()
 	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-a>",add)
@@ -239,9 +387,9 @@ def addChild(event):
 	line=f.get("insert linestart","insert lineend")
 	tabs = line.count('\t')
 	# Move and insert tabs and box
-	f.mark_set(INSERT,"insert+1l linestart")
-	f.insert(INSERT,'\t'*tabs+'\t[ ] \n',"todo")
-	f.mark_set(INSERT,"insert-1c")
+	f.mark_set(tkinter.INSERT,"insert+1l linestart")
+	f.insert(tkinter.INSERT,'\t'*tabs+'\t[ ] \n',"todo")
+	f.mark_set(tkinter.INSERT,"insert-1c")
 	toggleHidden()
 	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-c>",addChild)
@@ -256,7 +404,7 @@ f.bind("<Alt-t>",addTab)
 def removeTab(event):
 	tab = f.get("insert linestart","insert lineend").find('\t')
 	if tab>=0:
-		f.delete(f.index(INSERT).split('.')[0]+'.'+str(tab))
+		f.delete(f.index(tkinter.INSERT).split('.')[0]+'.'+str(tab))
 	toggleHidden()
 	top.wm_title(filename+" * -- PyDone")
 f.bind("<Alt-T>",removeTab)
@@ -279,5 +427,5 @@ f.bind("<KeyPress>",modified)
 # Start UI
 refreshField() # Initialize the field
 top.wm_title(filename+" -- PyDone") # Reinitialize the window title
-f.configure(undo=TRUE) # Allows undo/redo now
+f.configure(undo=tkinter.TRUE) # Allows undo/redo now
 top.mainloop()

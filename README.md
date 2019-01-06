@@ -1,6 +1,6 @@
 # PyDone
 
-![PyDone icon: a snake and a pen, crossing and forming an ampersand.](./PyDone.png)
+![PyDone icon: a snake and a pen, crossing and forming an ampersand.](./icon.png)
 A python 3 script to display and edit text-based to-do lists with a simple user interface.
 
 
@@ -28,7 +28,7 @@ $ git clone git@gitlab.com:eyuku/pydone.git
 ```
 or by [downloading the archive](https://gitlab.com/eyuku/pydone/-/archive/master/pydone-master.zip).
 
-## Usage
+## Basic usage
 ### Start the script
 In the folder where you downloaded the files, run
 ```console
@@ -62,6 +62,21 @@ Pressing `Ctrl`+`s` will overwrite the open file or write in ‘pydone_default' 
 * `Alt`+`c`: insert new task under the current line, with one more level of identation.
 * `Alt`+`t`: Add one level of identation to the current line.
 * `Alt`+`T`: Remove one level of identation to the current line.
+
+## Advanced usage
+### Command line options
+* The file to be opened can be specified by `-f`, `--file`, or is the first leftover argument.
+* A theme can be loaded with the option `-t` or `--t`.
+* `&` is just there to free the terminal after starting the programm.
+
+Example:
+```console
+$ python PyDone.py -t themename -f filename &
+```
+
+###Themes
+A theme is a file written in python dictionnary format.
+To be completed.
 
 
 ## [Unlicense](https://gitlab.com/eyuku/pydone/blob/e09a48f2cf2ddcb971668dcae406531dc210341b/LICENSE)
