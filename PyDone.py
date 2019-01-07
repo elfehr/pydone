@@ -5,6 +5,7 @@
 import tkinter
 import sys
 from optparse import OptionParser
+import io
 #from tkinter import font
 
 
@@ -30,9 +31,9 @@ colMax = 999
 # Read arguments
 parser = OptionParser()
 parser.add_option("-f", "--file", dest="filename", default="pydone_default",
-                  help="write report to FILE")
+				help="write report to FILE")
 parser.add_option("-t", "--theme", dest="themename", default="",
-                  help="theme help")
+				help="theme help")
 (options, args) = parser.parse_args()
 filename = options.filename
 themename = options.themename
@@ -250,7 +251,7 @@ def toggleHidden():
 
 # Function Inserting file and formatting line by line
 def refreshField():
-	l  = open(filename,'r')
+	l  = io.open(filename,'r',encoding='utf-8')
 	tagCol = [] # empty custom tags
 	tagDef = []
 	
@@ -323,20 +324,22 @@ def refreshField():
 # Save and refresh formatting
 def save(event):
 	# Save to file
-	l = open(filename,'w')
-	l.write(f.get("1.0",'end-1c'))
-	l.close()
-	# Remove all tags
-	tagList = f.tag_names()
-	for tag in tagList:
-		f.tag_remove(tag,1.0)
-	# Empty and refresh, saving cursor position
-	cursor = f.index(tkinter.INSERT)
-	f.delete('1.0', tkinter.END)
-	refreshField()
-	f.mark_set(tkinter.INSERT,cursor)
-	# Reset window title
-	top.wm_title(filename+" -- PyDone")
+	try:
+		with io.open(filename,'w',encoding='utf-8') as l:
+			l.write(f.get("1.0",'end-1c'))
+		# Remove all tags
+		tagList = f.tag_names()
+		for tag in tagList:
+			f.tag_remove(tag,1.0)
+		# Empty and refresh, saving cursor position
+		cursor = f.index(tkinter.INSERT)
+		f.delete('1.0', tkinter.END)
+		refreshField()
+		f.mark_set(tkinter.INSERT,cursor)
+		# Reset window title
+		top.wm_title(filename+" -- PyDone")
+	except Exception as error:
+		print("Error saving:",error)
 f.bind("<Control-s>", save)
 
 
